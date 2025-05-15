@@ -23,12 +23,10 @@ export default function ChatPage() {
   const [error, setError] = useState("");
   const bottomRef = useRef();
 
-  // Redirect unauthenticated users
   useEffect(() => {
     if (!user) router.push("/login");
   }, [user, router]);
 
-  // Load conversation history
   useEffect(() => {
     if (!user) return;
 
@@ -56,6 +54,7 @@ export default function ChatPage() {
               sender: "bot",
               text: conv.answer,
               timestamp: new Date(conv.created_at || Date.now()),
+              sources: conv.sources || [], // include if available
             },
           ])
           .flat();
@@ -66,7 +65,7 @@ export default function ChatPage() {
             text: "Welcome! What do we get started with?",
             timestamp: new Date().toISOString(),
           },
-          ...formatted, // no reverse here
+          ...formatted,
         ]);
       } catch (e) {
         console.error("History error:", e);
@@ -77,12 +76,10 @@ export default function ChatPage() {
     fetchHistory();
   }, [user]);
 
-  // Scroll to bottom when messages update
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Send message to private chat API
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
 
@@ -122,6 +119,7 @@ export default function ChatPage() {
           sender: "bot",
           text: data.reply,
           timestamp: new Date().toISOString(),
+          sources: data.sources || [],
         },
       ]);
     } catch (err) {
@@ -176,6 +174,18 @@ export default function ChatPage() {
                   minute: "2-digit",
                 })}
               </span>
+
+              {/* Show references under bot message */}
+              {msg.sender === "bot" && msg.sources?.length > 0 && (
+                <div className="mt-2 border-t border-gray-300 pt-2 space-y-1">
+                  <p className="text-xs font-semibold text-gray-700">References:</p>
+                  {msg.sources.map((src, i) => (
+                    <div key={i} className="text-xs text-gray-600">
+                      <strong>{src.source}</strong>: {src.content}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ))}
