@@ -5,8 +5,8 @@ Agentica is an agentic AI chat platform powered by large language models, featur
 
 ## Clone from GitHub  
 ```bash
-git clone https://github.com/NoManNayeem/Agentica.git
-cd agentica
+git clone https://github.com/NoManNayeem/Agentica-RAG.git
+cd Agentica-RAG
 ```
 
 ## Install and Run Locally (Backend & Frontend)
